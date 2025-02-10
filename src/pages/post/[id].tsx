@@ -1,5 +1,5 @@
 import { GetStaticPaths, GetStaticProps } from "next";
-import { fetchPostById, fetchPosts } from "../../services/postService";
+import { fetchMorePosts, fetchPostById } from "../../services/postService";
 import { Post } from "../../types/post";
 
 interface PostDetailProps {
@@ -19,13 +19,10 @@ export default function PostDetail({ post }: PostDetailProps) {
 }
 
 export const getStaticPaths: GetStaticPaths = async () => {
-  const posts = await fetchPosts();
+  const posts = await fetchMorePosts(1, 6);
+  const paths = posts.map((post) => ({ params: { id: post.id.toString() } }));
 
-  const paths = posts.map((post) => ({
-    params: { id: post.id.toString() },
-  }));
-
-  return { paths, fallback: false };
+  return { paths, fallback: "blocking" };
 };
 
 export const getStaticProps: GetStaticProps = async ({ params }) => {
